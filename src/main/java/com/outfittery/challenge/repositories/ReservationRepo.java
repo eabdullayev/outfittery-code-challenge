@@ -9,4 +9,6 @@ import java.util.List;
 public interface ReservationRepo extends JpaRepository<Reservation, Long> {
 
     List<Reservation> findByStylistIdAndDateBetween(Long stylistId, LocalDate start, LocalDate end);
+
+    List<Reservation> findByStylistIdAndDateGreaterThanEqual(Long stylistId, LocalDate start);
 }

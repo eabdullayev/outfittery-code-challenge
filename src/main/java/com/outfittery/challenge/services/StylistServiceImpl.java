@@ -1,8 +1,6 @@
 package com.outfittery.challenge.services;
 
-import com.outfittery.challenge.models.Leave;
-import com.outfittery.challenge.models.Reservation;
-import com.outfittery.challenge.models.Stylist;
+import com.outfittery.challenge.models.*;
 import com.outfittery.challenge.repositories.LeaveRepo;
 import com.outfittery.challenge.repositories.ReservationRepo;
 import com.outfittery.challenge.repositories.StylistRepo;
@@ -32,7 +30,7 @@ public class StylistServiceImpl implements StylistService {
     public Stylist getById(Long id) {
         return stylistRepo.findById(id)
                 .orElseThrow(() -> {
-                    return new RuntimeException("Stylist with Id=" + id+ " not found in db");
+                    return new RuntimeException("Stylist with Id=" + id + " not found in db");
                 });
     }
 
@@ -50,10 +48,22 @@ public class StylistServiceImpl implements StylistService {
     @Override
     @Transactional
     public boolean requestForLeave(Leave leave) {
-        List<Reservation> reservationList = reservationRepo.findByStylistIdAndDateBetween(leave.getStylist().getId(), leave.getBegin(), leave.getEnd());
-        leaveRepo.save(leave);
+        List<Reservation> reservationList = null;
+        if (leave.getLeaveType() == LeaveType.LEAVE_COMPANY) {
+            reservationList = reservationRepo.findByStylistIdAndDateGreaterThanEqual(leave.getStylist().getId(), leave.getBegin());
+            Stylist stylist = stylistRepo.findById(leave.getStylist().getId())
+                    .orElseThrow(() -> {
+                        return new RuntimeException("Stylist with id=" + leave.getStylist().getId()+ " not found in db");
+                    });
+            stylist.setStylistState(StylistState.OFF_BOARDED);
+            stylistRepo.save(stylist);
+        } else {
+            reservationList = reservationRepo.findByStylistIdAndDateBetween(leave.getStylist().getId(), leave.getBegin(), leave.getEnd());
+        }
+
         reservationRepo.deleteAll(reservationList);
-        for(Reservation reservation : reservationList){
+        leaveRepo.save(leave);
+        for (Reservation reservation : reservationList) {
             ReservationRequest reservationRequest = ReservationBuilder.buildReservationRequest(reservation);
             reservationService.makeReservation(reservationRequest);
         }
