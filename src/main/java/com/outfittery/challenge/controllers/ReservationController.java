@@ -2,6 +2,7 @@ package com.outfittery.challenge.controllers;
 
 import com.outfittery.challenge.models.Reservation;
 import com.outfittery.challenge.rest.dto.ReservationRequest;
+import com.outfittery.challenge.rest.dto.ReservationResponse;
 import com.outfittery.challenge.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,7 +28,7 @@ public class ReservationController {
 
     @PostMapping("/make-reservation")
     @ResponseStatus(HttpStatus.CREATED)
-    public Reservation makeReservation(@RequestBody ReservationRequest request) {
+    public ReservationResponse makeReservation(@RequestBody ReservationRequest request) {
         //todo implement validation
         return reservationService.makeReservation(request);
     }

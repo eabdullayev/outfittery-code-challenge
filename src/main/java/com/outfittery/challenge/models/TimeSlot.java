@@ -1,16 +1,11 @@
 package com.outfittery.challenge.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "TIME_SLOTS")
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class TimeSlot implements Serializable {
     @Id
     @SequenceGenerator(name = "SEQ_TIME_SLOT_ID", sequenceName = "SEQ_TIME_SLOT_ID", initialValue = 1, allocationSize = 1)
@@ -20,7 +15,6 @@ public class TimeSlot implements Serializable {
     private Integer idxTime;
     private String time;
 
-    @JsonBackReference(value = "timeSlotReservation")
     @OneToMany(mappedBy = "timeSlot")
     List<Reservation> reservations;
 

@@ -1,16 +1,10 @@
 package com.outfittery.challenge.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "STYLISTS")
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Stylist {
     @Id
     @SequenceGenerator(name = "SEQ_STYLIST_ID", sequenceName = "SEQ_STYLIST_ID", initialValue = 1, allocationSize = 1)
@@ -21,11 +15,9 @@ public class Stylist {
     @Column(name = "state")
     private StylistState stylistState = StylistState.ROOKIE;
 
-    @JsonBackReference(value = "stylistLeaves")
     @OneToMany(mappedBy = "stylist")
     private List<Leave> leaves;
 
-    @JsonBackReference(value = "stylistReservation")
     @OneToMany(mappedBy = "stylist")
     private List<Reservation> reservations;
 

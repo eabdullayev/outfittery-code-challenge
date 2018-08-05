@@ -1,16 +1,10 @@
 package com.outfittery.challenge.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "LEAVES")
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Leave {
     @Id
     @SequenceGenerator(name = "SEQ_LEAVE_ID", sequenceName = "SEQ_LEAVE_ID", initialValue = 1, allocationSize = 1)
@@ -21,7 +15,6 @@ public class Leave {
 
     private LocalDate end;
 
-    @JsonManagedReference(value = "leaveStylist")
     @ManyToOne
     @JoinColumn(name = "stylist_id")
     private Stylist stylist;

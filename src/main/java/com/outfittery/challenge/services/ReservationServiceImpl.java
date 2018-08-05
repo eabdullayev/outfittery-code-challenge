@@ -4,6 +4,8 @@ import com.outfittery.challenge.helper.ReservationHelper;
 import com.outfittery.challenge.models.*;
 import com.outfittery.challenge.repositories.*;
 import com.outfittery.challenge.rest.dto.ReservationRequest;
+import com.outfittery.challenge.rest.dto.ReservationResponse;
+import com.outfittery.challenge.rest.dto.builder.ReservationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
-    public Reservation makeReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse makeReservation(ReservationRequest reservationRequest) {
         Customer customer = customerRepo.findById(reservationRequest.getCustomerId())
                 .orElseThrow(() -> {
                     return new RuntimeException("Customer not found");
@@ -58,7 +60,8 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setDate(reservationRequest.getDate());
         reservation.setTimeSlot(timeSlot);
         reservationRepo.save(reservation);
-        return reservation;
+
+        return ReservationBuilder.buildReservationResponse(reservation);
     }
 
     @Override
