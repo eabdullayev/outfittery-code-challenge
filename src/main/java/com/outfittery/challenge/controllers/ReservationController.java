@@ -18,7 +18,7 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
-    @GetMapping("/available-time-slot")
+    @GetMapping("/time-slots/available")
     public List<String> getAvailableTimeSlot(@RequestParam(name = "date")
                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                              LocalDate date) {

@@ -29,17 +29,23 @@ public class StylistServiceImpl implements StylistService {
     @Override
     public Stylist getById(Long id) {
         return stylistRepo.findById(id)
-                .orElseThrow(() -> {
-                    return new RuntimeException("Stylist with Id=" + id + " not found in db");
-                });
+                .orElseThrow(() -> new RuntimeException("Stylist with Id=" + id + " not found in db"));
     }
 
-    @Override
+    @Override @Transactional
     public Stylist save(Stylist stylist) {
         return stylistRepo.save(stylist);
     }
 
-    @Override
+    @Override @Transactional
+    public Long updateState(Long stylistId) {
+        Stylist fromDB = stylistRepo.findById(stylistId)
+                .orElseThrow(() -> new RuntimeException("Stylist with Id=" + stylistId + " not found in db"));
+        fromDB.setStylistState(StylistState.READY_TO_STYLE);
+        return stylistRepo.save(fromDB).getId();
+    }
+
+    @Override @Transactional
     public boolean delete(Long id) {
         stylistRepo.deleteById(id);
         return true;
@@ -49,7 +55,7 @@ public class StylistServiceImpl implements StylistService {
     @Transactional
     public boolean requestForLeave(Leave leave) {
         List<Reservation> reservationList = null;
-        if (leave.getLeaveType() == LeaveType.LEAVE_COMPANY) {
+        if (leave.getLeaveType() == LeaveType.LEFT_COMPANY) {
             reservationList = reservationRepo.findByStylistIdAndDateGreaterThanEqual(leave.getStylist().getId(), leave.getBegin());
             Stylist stylist = stylistRepo.findById(leave.getStylist().getId())
                     .orElseThrow(() -> {
