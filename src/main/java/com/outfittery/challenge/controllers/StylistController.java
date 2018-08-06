@@ -30,7 +30,7 @@ public class StylistController {
 
     @PatchMapping("/ready-for-style/{stylistId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public Long updateState(@PathVariable(name = "stylistId") Long stylistId) {
+    public Long readyForStyle(@PathVariable(name = "stylistId") Long stylistId) {
         //todo implement validation
         return stylistService.updateState(stylistId);
     }
