@@ -3,6 +3,7 @@ package com.outfittery.challenge.services;
 import com.outfittery.challenge.helper.ReservationHelper;
 import com.outfittery.challenge.models.*;
 import com.outfittery.challenge.repositories.*;
+import com.outfittery.challenge.rest.dto.ManyReservationResponse;
 import com.outfittery.challenge.rest.dto.ReservationRequest;
 import com.outfittery.challenge.rest.dto.ReservationResponse;
 import com.outfittery.challenge.rest.dto.builder.ReservationBuilder;
@@ -37,9 +38,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationResponse makeReservation(ReservationRequest reservationRequest) {
         Customer customer = customerRepo.findById(reservationRequest.getCustomerId())
-                .orElseThrow(() -> {
-                    return new RuntimeException("Customer not found");
-                });
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
 
         List<Reservation> customerReservations = reservationRepo.findByCustomerIdAndDateGreaterThanEqual(customer.getId(), LocalDate.now());
 
@@ -49,19 +48,12 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         TimeSlot timeSlot = timeSlotRepo.findByTime(reservationRequest.getTimeSlot())
-                .orElseThrow(() -> {
-                    return new RuntimeException("Invalid time entered");
-                });
+                .orElseThrow(() -> new RuntimeException("Invalid time entered"));
         VAvailableTimeSlot availableTimeSlot = availableTimeSlotsRepo.findAllFreeTimeSlotsByDateAndTime(reservationRequest.getDate(), reservationRequest.getTimeSlot())
-                .orElseThrow(() -> {
-                    return new RuntimeException("Time slot not available.");
-                });
+                .orElseThrow(() -> new RuntimeException("Time slot not available."));
 
-        Stylist stylist = stylistRepo.findById(ReservationHelper
-                .getFreeStylist(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds()))
-                .orElseThrow(() -> {
-                    return new RuntimeException("Invalid stylist id");
-                });
+        Stylist stylist = stylistRepo.getOne(ReservationHelper
+                .getFreeStylist(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds()));
 
         Reservation reservation = new Reservation();
         reservation.setCustomer(customer);
@@ -73,15 +65,52 @@ public class ReservationServiceImpl implements ReservationService {
         return ReservationBuilder.buildReservationResponse(reservation);
     }
 
+    @Override @Transactional
+    public ReservationResponse updateReservation(ReservationRequest reservationRequest) {
+        if (reservationRequest.getReservationId() == null) {
+            throw new RuntimeException("reservation not selected.");
+        }
+
+        Reservation r = reservationRepo.findById(reservationRequest.getReservationId())
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        if (r.getDate().isBefore(LocalDate.now())) {
+            throw new RuntimeException("Old reservations can not be changed");
+        }
+
+        if (r.getCustomer().getId() != reservationRequest.getCustomerId()) {
+            throw new RuntimeException("invalid operation. reservation not belong to customer");
+        }
+
+        TimeSlot timeSlot = timeSlotRepo.findByTime(reservationRequest.getTimeSlot())
+                .orElseThrow(() -> new RuntimeException("Invalid time entered"));
+        VAvailableTimeSlot availableTimeSlot = availableTimeSlotsRepo.findAllFreeTimeSlotsByDateAndTime(reservationRequest.getDate(), reservationRequest.getTimeSlot())
+                .orElseThrow(() -> new RuntimeException("Time slot not available."));
+
+        Stylist stylist = stylistRepo.getOne(ReservationHelper
+                .getFreeStylist(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds()));
+
+        r.setStylist(stylist);
+        r.setDate(reservationRequest.getDate());
+        r.setTimeSlot(timeSlot);
+        reservationRepo.save(r);
+
+        return ReservationBuilder.buildReservationResponse(r);
+    }
+
     @Override
     @Transactional
-    public boolean makeManyReservations(List<ReservationRequest> reservationRequestList) {
-        try {
-            reservationRequestList.stream().forEach(this::makeReservation);
-            return true;
-        } catch (RuntimeException re) {
-            return false;
+    public ManyReservationResponse makeManyReservations(List<ReservationRequest> reservationRequestList) {
+        ManyReservationResponse response = new ManyReservationResponse();
+        for (ReservationRequest request : reservationRequestList) {
+            try {
+                ReservationResponse rr = this.makeReservation(request);
+                response.getProcessedReservations().add(rr);
+            } catch (RuntimeException re) {
+                response.getFailedReservations().add(request);
+            }
         }
+        return response;
     }
 
     @Override
@@ -92,4 +121,5 @@ public class ReservationServiceImpl implements ReservationService {
         }
         return null;
     }
+
 }

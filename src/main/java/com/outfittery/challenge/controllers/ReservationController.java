@@ -1,6 +1,7 @@
 package com.outfittery.challenge.controllers;
 
 import com.outfittery.challenge.models.Reservation;
+import com.outfittery.challenge.rest.dto.ManyReservationResponse;
 import com.outfittery.challenge.rest.dto.ReservationRequest;
 import com.outfittery.challenge.rest.dto.ReservationResponse;
 import com.outfittery.challenge.services.ReservationService;
@@ -33,9 +34,16 @@ public class ReservationController {
         return reservationService.makeReservation(request);
     }
 
+    @PutMapping("/update-reservation")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReservationResponse updateReservation(@RequestBody ReservationRequest request) {
+        //todo implement validation
+        return reservationService.updateReservation(request);
+    }
+
     @PostMapping("/make-many-reservation")
     @ResponseStatus(HttpStatus.CREATED)
-    public boolean makeManyReservation(@RequestBody List<ReservationRequest> request) {
+    public ManyReservationResponse makeManyReservation(@RequestBody List<ReservationRequest> request) {
         //todo implement validation
         return reservationService.makeManyReservations(request);
     }

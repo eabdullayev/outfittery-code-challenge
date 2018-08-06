@@ -3,9 +3,18 @@ package com.outfittery.challenge.rest.dto;
 import java.time.LocalDate;
 
 public class ReservationRequest {
+    private Long reservationId;
     private Long customerId;
     private String timeSlot;
     private LocalDate date;
+
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public void setReservationId(Long reservationId) {
+        this.reservationId = reservationId;
+    }
 
     public Long getCustomerId() {
         return customerId;
