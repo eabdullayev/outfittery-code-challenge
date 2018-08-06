@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,14 @@ public class ReservationServiceImpl implements ReservationService {
                 .orElseThrow(() -> {
                     return new RuntimeException("Customer not found");
                 });
+
+        List<Reservation> customerReservations = reservationRepo.findByCustomerIdAndDateGreaterThanEqual(customer.getId(), LocalDate.now());
+
+        Reservation r = null;
+        if ((r = ReservationHelper.hasBooking(customerReservations)) != null) {
+            throw new RuntimeException("You already have reservation at " + r.getDate() + " " + r.getTimeSlot().getTime());
+        }
+
         TimeSlot timeSlot = timeSlotRepo.findByTime(reservationRequest.getTimeSlot())
                 .orElseThrow(() -> {
                     return new RuntimeException("Invalid time entered");
