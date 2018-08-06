@@ -69,6 +69,7 @@ public class StylistServiceImpl implements StylistService {
 
         reservationRepo.deleteAll(reservationList);
         leaveRepo.save(leave);
+
         for (Reservation reservation : reservationList) {
             ReservationRequest reservationRequest = ReservationBuilder.buildReservationRequest(reservation);
             reservationService.makeReservation(reservationRequest);
