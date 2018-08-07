@@ -40,20 +40,18 @@ public class ReservationController {
     @PostMapping("/make-reservation")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse makeReservation(@Valid @RequestBody ReservationRequest request) {
-        //todo implement validation
         return reservationService.makeReservation(request);
     }
 
     @PutMapping("/update-reservation")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse updateReservation(@RequestBody ReservationRequest request) {
-        //todo implement validation
+    public ReservationResponse updateReservation(@Valid @RequestBody ReservationRequest request) {
         return reservationService.updateReservation(request);
     }
 
     @PostMapping("/make-many-reservation")
     @ResponseStatus(HttpStatus.CREATED)
-    public ManyReservationResponse makeManyReservation(@RequestBody List<ReservationRequest> request) {
+    public ManyReservationResponse makeManyReservation(@Valid @RequestBody List<ReservationRequest> request) {
         //todo implement validation
         return reservationService.makeManyReservations(request);
     }
