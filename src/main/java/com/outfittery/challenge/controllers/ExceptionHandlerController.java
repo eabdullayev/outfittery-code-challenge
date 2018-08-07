@@ -1,5 +1,6 @@
 package com.outfittery.challenge.controllers;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.outfittery.challenge.rest.dto.ExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -28,10 +29,17 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionResponse constraintViolationHandler(MethodArgumentNotValidException ex, WebRequest request) {
+    public ExceptionResponse methodArgsNotValidHandler(MethodArgumentNotValidException ex, WebRequest request) {
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
 
         return new ExceptionResponse(fieldErrors,
+                request.getDescription(false));
+    }
+
+    @ExceptionHandler(InvalidFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse methodArgsNotValidHandler(InvalidFormatException ex, WebRequest request) {
+        return new ExceptionResponse(ex.getMessage(), ex.getValue(),
                 request.getDescription(false));
     }
 }

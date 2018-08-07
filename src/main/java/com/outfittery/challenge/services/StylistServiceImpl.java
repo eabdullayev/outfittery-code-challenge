@@ -4,6 +4,7 @@ import com.outfittery.challenge.models.*;
 import com.outfittery.challenge.repositories.LeaveRepo;
 import com.outfittery.challenge.repositories.ReservationRepo;
 import com.outfittery.challenge.repositories.StylistRepo;
+import com.outfittery.challenge.rest.dto.LeaveRequest;
 import com.outfittery.challenge.rest.dto.ReservationRequest;
 import com.outfittery.challenge.rest.dto.builder.ReservationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,21 +54,23 @@ public class StylistServiceImpl implements StylistService {
 
     @Override
     @Transactional
-    public boolean requestForLeave(Leave leave) {
+    public boolean requestForLeave(LeaveRequest leaveRequest) {
         List<Reservation> reservationList = null;
-        if (leave.getLeaveType() == LeaveType.LEFT_COMPANY) {
-            reservationList = reservationRepo.findByStylistIdAndDateGreaterThanEqual(leave.getStylist().getId(), leave.getBegin());
-            Stylist stylist = stylistRepo.findById(leave.getStylist().getId())
+        if (leaveRequest.getLeaveType() == LeaveType.LEFT_COMPANY) {
+            reservationList = reservationRepo.findByStylistIdAndDateGreaterThanEqual(leaveRequest.getStylistId(), leaveRequest.getBegin());
+            Stylist stylist = stylistRepo.findById(leaveRequest.getStylistId())
                     .orElseThrow(() -> {
-                        return new RuntimeException("Stylist with id=" + leave.getStylist().getId()+ " not found in db");
+                        return new RuntimeException("Stylist with id=" + leaveRequest.getStylistId()+ " not found in db");
                     });
             stylist.setStylistState(StylistState.OFF_BOARDED);
             stylistRepo.save(stylist);
         } else {
-            reservationList = reservationRepo.findByStylistIdAndDateBetween(leave.getStylist().getId(), leave.getBegin(), leave.getEnd());
+            reservationList = reservationRepo.findByStylistIdAndDateBetween(leaveRequest.getStylistId(), leaveRequest.getBegin(), leaveRequest.getEnd());
         }
 
         reservationRepo.deleteAll(reservationList);
+
+        Leave leave = new Leave(leaveRequest.getBegin(), leaveRequest.getEnd(), new Stylist(leaveRequest.getStylistId()), leaveRequest.getLeaveType());
         leaveRepo.save(leave);
 
         for (Reservation reservation : reservationList) {

@@ -27,11 +27,13 @@ public class ExceptionResponse {
     public ExceptionResponse(List<org.springframework.validation.FieldError> fieldErrors, String details) {
         this.errors = fieldErrors.stream().map(FieldError::new).collect(Collectors.toList());
         this.details = details;
+        this.date = LocalDate.now();
     }
 
     public ExceptionResponse(Set<ConstraintViolation<?>> fieldErrors, String details) {
         this.errors = fieldErrors.stream().map(FieldError::new).collect(Collectors.toList());
         this.details = details;
+        this.date = LocalDate.now();
     }
 
     public LocalDate getDate() {
