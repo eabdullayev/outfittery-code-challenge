@@ -1,5 +1,7 @@
 package com.outfittery.challenge.services;
 
+import com.outfittery.challenge.exceptions.BadRequestException;
+import com.outfittery.challenge.exceptions.ResourceNotFoundException;
 import com.outfittery.challenge.helper.ReservationHelper;
 import com.outfittery.challenge.models.*;
 import com.outfittery.challenge.repositories.*;
@@ -12,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,19 +39,20 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationResponse makeReservation(ReservationRequest reservationRequest) {
         Customer customer = customerRepo.findById(reservationRequest.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found", reservationRequest.getCustomerId()));
 
         List<Reservation> customerReservations = reservationRepo.findByCustomerIdAndDateGreaterThanEqual(customer.getId(), LocalDate.now());
 
         Reservation r = null;
         if ((r = ReservationHelper.hasBooking(customerReservations)) != null) {
-            throw new RuntimeException("You already have reservation at " + r.getDate() + " " + r.getTimeSlot().getTime());
+            throw new BadRequestException("You already have reservation at " + r.getDate() + " " + r.getTimeSlot().getTime(),
+                    reservationRequest.getDate() + "-" + reservationRequest.getTimeSlot());
         }
 
         TimeSlot timeSlot = timeSlotRepo.findByTime(reservationRequest.getTimeSlot())
-                .orElseThrow(() -> new RuntimeException("Invalid time entered"));
+                .orElseThrow(() -> new BadRequestException("Invalid time entered", reservationRequest.getTimeSlot()));
         VAvailableTimeSlot availableTimeSlot = availableTimeSlotsRepo.findAllFreeTimeSlotsByDateAndTime(reservationRequest.getDate(), reservationRequest.getTimeSlot())
-                .orElseThrow(() -> new RuntimeException("Time slot not available."));
+                .orElseThrow(() -> new BadRequestException("Time slot not available.", reservationRequest.getDate() + "-" + reservationRequest.getTimeSlot()));
 
         Stylist stylist = stylistRepo.getOne(ReservationHelper
                 .getFreeStylist(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds()));
@@ -68,24 +70,24 @@ public class ReservationServiceImpl implements ReservationService {
     @Override @Transactional
     public ReservationResponse updateReservation(ReservationRequest reservationRequest) {
         if (reservationRequest.getReservationId() == null) {
-            throw new RuntimeException("reservation not selected.");
+            throw new BadRequestException("reservation not selected.", reservationRequest.getReservationId());
         }
 
         Reservation r = reservationRepo.findById(reservationRequest.getReservationId())
-                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found", reservationRequest.getReservationId()));
 
         if (r.getDate().isBefore(LocalDate.now())) {
-            throw new RuntimeException("Old reservations can not be changed");
+            throw new BadRequestException("Old reservations can not be changed", r.getDate());
         }
 
         if (r.getCustomer().getId() != reservationRequest.getCustomerId()) {
-            throw new RuntimeException("invalid operation. reservation not belong to customer");
+            throw new BadRequestException("invalid operation. reservation not belong to customer", reservationRequest.getCustomerId());
         }
 
         TimeSlot timeSlot = timeSlotRepo.findByTime(reservationRequest.getTimeSlot())
-                .orElseThrow(() -> new RuntimeException("Invalid time entered"));
+                .orElseThrow(() -> new BadRequestException("Invalid time entered", reservationRequest.getTimeSlot()));
         VAvailableTimeSlot availableTimeSlot = availableTimeSlotsRepo.findAllFreeTimeSlotsByDateAndTime(reservationRequest.getDate(), reservationRequest.getTimeSlot())
-                .orElseThrow(() -> new RuntimeException("Time slot not available."));
+                .orElseThrow(() -> new BadRequestException("Time slot not available.", reservationRequest.getDate() + "-" + reservationRequest.getTimeSlot()));
 
         Stylist stylist = stylistRepo.getOne(ReservationHelper
                 .getFreeStylist(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds()));

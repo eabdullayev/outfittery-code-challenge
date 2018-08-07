@@ -1,5 +1,6 @@
 package com.outfittery.challenge.services;
 
+import com.outfittery.challenge.exceptions.ResourceNotFoundException;
 import com.outfittery.challenge.models.Customer;
 import com.outfittery.challenge.repositories.CustomerRepo;
 import com.outfittery.challenge.rest.dto.CustomerResponse;
@@ -25,7 +26,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public CustomerResponse getById(Long id) {
-        return CustomerBuilder.buildCustomerResponse(customerRepo.findById(id).orElseThrow(()-> new RuntimeException("Customer id=" + id + " not found in DB")));
+        return CustomerBuilder.buildCustomerResponse(customerRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Customer not found in DB", id)));
     }
 
     @Override @Transactional

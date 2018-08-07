@@ -1,6 +1,8 @@
 package com.outfittery.challenge.controllers;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.outfittery.challenge.exceptions.BadRequestException;
+import com.outfittery.challenge.exceptions.ResourceNotFoundException;
 import com.outfittery.challenge.rest.dto.ExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -11,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.HashSet;
 import java.util.List;
 
 @RestControllerAdvice
@@ -38,8 +38,22 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(InvalidFormatException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionResponse methodArgsNotValidHandler(InvalidFormatException ex, WebRequest request) {
+    public ExceptionResponse invalidFormatHandler(InvalidFormatException ex, WebRequest request) {
         return new ExceptionResponse(ex.getMessage(), ex.getValue(),
+                request.getDescription(false));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ExceptionResponse resourceNotFoundHandler(ResourceNotFoundException ex, WebRequest request) {
+        return new ExceptionResponse(ex.getMessage(), ex.getRejectedValue(),
+                request.getDescription(false));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse badRequesthandler(BadRequestException ex, WebRequest request) {
+        return new ExceptionResponse(ex.getMessage(), ex.getRejectedValue(),
                 request.getDescription(false));
     }
 }

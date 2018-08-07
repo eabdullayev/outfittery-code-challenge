@@ -1,5 +1,6 @@
 package com.outfittery.challenge.services;
 
+import com.outfittery.challenge.exceptions.ResourceNotFoundException;
 import com.outfittery.challenge.models.*;
 import com.outfittery.challenge.repositories.LeaveRepo;
 import com.outfittery.challenge.repositories.ReservationRepo;
@@ -30,7 +31,7 @@ public class StylistServiceImpl implements StylistService {
     @Override
     public Stylist getById(Long id) {
         return stylistRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Stylist with Id=" + id + " not found in db"));
+                .orElseThrow(() -> new ResourceNotFoundException("Stylist not found in db", id));
     }
 
     @Override @Transactional
@@ -41,7 +42,7 @@ public class StylistServiceImpl implements StylistService {
     @Override @Transactional
     public Long updateState(Long stylistId) {
         Stylist fromDB = stylistRepo.findById(stylistId)
-                .orElseThrow(() -> new RuntimeException("Stylist with Id=" + stylistId + " not found in db"));
+                .orElseThrow(() -> new ResourceNotFoundException("Stylist not found in db", stylistId));
         fromDB.setStylistState(StylistState.READY_TO_STYLE);
         return stylistRepo.save(fromDB).getId();
     }
@@ -60,7 +61,7 @@ public class StylistServiceImpl implements StylistService {
             reservationList = reservationRepo.findByStylistIdAndDateGreaterThanEqual(leaveRequest.getStylistId(), leaveRequest.getBegin());
             Stylist stylist = stylistRepo.findById(leaveRequest.getStylistId())
                     .orElseThrow(() -> {
-                        return new RuntimeException("Stylist with id=" + leaveRequest.getStylistId()+ " not found in db");
+                        return new ResourceNotFoundException("Stylist not found in db", leaveRequest.getStylistId());
                     });
             stylist.setStylistState(StylistState.OFF_BOARDED);
             stylistRepo.save(stylist);
