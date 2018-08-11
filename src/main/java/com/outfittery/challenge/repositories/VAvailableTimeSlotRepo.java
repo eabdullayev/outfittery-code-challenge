@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface AvailableTimeSlotRepo extends JpaRepository<VAvailableTimeSlot, String> {
+public interface VAvailableTimeSlotRepo extends JpaRepository<VAvailableTimeSlot, String> {
 
     List<VAvailableTimeSlot> findAllFreeTimeSlotsByDate(LocalDate date);
 

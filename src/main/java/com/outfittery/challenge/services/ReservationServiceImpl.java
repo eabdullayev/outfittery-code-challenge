@@ -3,6 +3,7 @@ package com.outfittery.challenge.services;
 import com.outfittery.challenge.exceptions.BadRequestException;
 import com.outfittery.challenge.exceptions.ResourceNotFoundException;
 import com.outfittery.challenge.helper.ReservationHelper;
+import com.outfittery.challenge.helper.StylistHelper;
 import com.outfittery.challenge.models.*;
 import com.outfittery.challenge.repositories.*;
 import com.outfittery.challenge.rest.dto.ManyReservationResponse;
@@ -24,7 +25,7 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationRepo reservationRepo;
 
     @Autowired
-    private AvailableTimeSlotRepo availableTimeSlotsRepo;
+    private VAvailableTimeSlotRepo availableTimeSlotsRepo;
 
     @Autowired
     private CustomerRepo customerRepo;
@@ -54,7 +55,7 @@ public class ReservationServiceImpl implements ReservationService {
         VAvailableTimeSlot availableTimeSlot = availableTimeSlotsRepo.findAllFreeTimeSlotsByDateAndTime(reservationRequest.getDate(), reservationRequest.getTimeSlot())
                 .orElseThrow(() -> new BadRequestException("Time slot not available.", reservationRequest.getDate() + "-" + reservationRequest.getTimeSlot()));
 
-        Stylist stylist = stylistRepo.getOne(ReservationHelper
+        Stylist stylist = stylistRepo.getOne(StylistHelper
                 .getFreeStylist(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds()));
 
         Reservation reservation = new Reservation();
@@ -89,7 +90,7 @@ public class ReservationServiceImpl implements ReservationService {
         VAvailableTimeSlot availableTimeSlot = availableTimeSlotsRepo.findAllFreeTimeSlotsByDateAndTime(reservationRequest.getDate(), reservationRequest.getTimeSlot())
                 .orElseThrow(() -> new BadRequestException("Time slot not available.", reservationRequest.getDate() + "-" + reservationRequest.getTimeSlot()));
 
-        Stylist stylist = stylistRepo.getOne(ReservationHelper
+        Stylist stylist = stylistRepo.getOne(StylistHelper
                 .getFreeStylist(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds()));
 
         r.setStylist(stylist);
