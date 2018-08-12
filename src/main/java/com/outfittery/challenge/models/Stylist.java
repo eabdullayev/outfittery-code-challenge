@@ -72,4 +72,14 @@ public class Stylist {
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Stylist{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", stylistState=").append(stylistState);
+        sb.append('}');
+        return sb.toString();
+    }
 }

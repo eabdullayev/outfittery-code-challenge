@@ -1,6 +1,7 @@
 package com.outfittery.challenge.services;
 
 import com.outfittery.challenge.exceptions.BadRequestException;
+import com.outfittery.challenge.exceptions.GenericException;
 import com.outfittery.challenge.exceptions.ResourceNotFoundException;
 import com.outfittery.challenge.helper.ReservationHelper;
 import com.outfittery.challenge.helper.StylistHelper;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,6 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public ReservationResponse makeReservation(ReservationRequest reservationRequest) {
+        logger.info("Make reservation, reservatinRequest: " + reservationRequest);
         //db validation start
         Customer customer = customerRepo.findById(reservationRequest.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found", reservationRequest.getCustomerId()));
@@ -74,8 +77,7 @@ public class ReservationServiceImpl implements ReservationService {
         TimeSlot timeSlot = timeSlotRepo.findByTime(reservationRequest.getTimeSlot())
                 .orElseThrow(() -> new BadRequestException("Invalid time entered", reservationRequest.getTimeSlot()));
 
-        AvailableTimeSlot availableTimeSlot = availableTimeSlotsRepo.findByDateAndTimeSlot(reservationRequest.getDate(), timeSlot)
-                .orElseThrow(() -> new BadRequestException("Time slot not available.", reservationRequest.getDate() + "-" + reservationRequest.getTimeSlot()));
+        AvailableTimeSlot availableTimeSlot = getAvailableTimeSlot(reservationRequest.getDate(), timeSlot);
 
         //db validation end, preparing required data.
         //removing one available stylist from list
@@ -100,6 +102,7 @@ public class ReservationServiceImpl implements ReservationService {
      */
     @Override @Transactional
     public ReservationResponse updateReservation(ReservationRequest reservationRequest) {
+        logger.info("Update reservation, reservatinRequest: " + reservationRequest);
         if (reservationRequest.getReservationId() == null) {
             throw new BadRequestException("reservation not selected.", reservationRequest.getReservationId());
         }
@@ -125,8 +128,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         //checking availability of stylists
-        AvailableTimeSlot availableTimeSlot = availableTimeSlotsRepo.findByDateAndTimeSlot(reservationRequest.getDate(), newTimeSlot)
-                .orElseThrow(() -> new BadRequestException("Time slot not available.", reservationRequest.getDate() + "-" + reservationRequest.getTimeSlot()));
+        AvailableTimeSlot availableTimeSlot = getAvailableTimeSlot(reservationRequest.getDate(), newTimeSlot);
 
         //get old available time slot data
         AvailableTimeSlot oldAvailableTimeSlot = availableTimeSlotsRepo.findByDateAndTimeSlot(r.getDate(), r.getTimeSlot())
@@ -158,6 +160,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public ManyReservationResponse makeManyReservations(List<ReservationRequest> reservationRequestList) {
+        logger.info("add many reservations, number or reservations: " + reservationRequestList.size());
         ManyReservationResponse response = new ManyReservationResponse();
         for (ReservationRequest request : reservationRequestList) {
             try {
@@ -165,9 +168,12 @@ public class ReservationServiceImpl implements ReservationService {
                 response.getProcessedReservations().add(rr);
             } catch (RuntimeException re) {
                 //if because of any reason will not be able to add db, will be skipped and process will continue for remain.
+                logger.warn("reservation: " + request + " failed because of: " + re.getMessage());
                 response.getFailedReservations().add(request);
             }
         }
+        logger.info("total successful reservations: " + response.getProcessedReservations().size() +
+                ", total failed: " + response.getFailedReservations().size());
         return response;
     }
 
@@ -180,18 +186,46 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<String> getTimeSlots(LocalDate date) {
         logger.info("getting time slots for date: " + date);
-        //if not in cached data, then caching specific date
-        if (Period.between(LocalDate.now(), date).getDays() >= daysToCache) {
-            logger.info("generating time slots for date: " + date);
-            availableTimeSlotService.cacheTimeSlotsByDate(date);
-        }
+
         List<AvailableTimeSlot> availableTimeSlots = availableTimeSlotsRepo.findAllTimeSlotsByDate(date);
-        if (availableTimeSlots != null) {
-            return availableTimeSlots.stream()
-                    .map(availableTimeSlot -> availableTimeSlot.getTimeSlot().getTime())
-                    .collect(Collectors.toList());
+        //if not cached jet,then do manual caching for that date
+        if (availableTimeSlots == null || availableTimeSlots.size()==0) {
+            createCacheForDate(date);
         }
-        return null;
+
+        return availableTimeSlots.stream()
+                .map(availableTimeSlot -> availableTimeSlot.getTimeSlot().getTime())
+                .collect(Collectors.toList());
     }
 
+
+    /**
+     * manually creating cache for missing dates
+     * @param date
+     */
+    private void createCacheForDate(LocalDate date) {
+        logger.info("manual generating time slots for date: " + date);
+        availableTimeSlotService.cacheTimeSlotsByDate(date);
+    }
+
+    /**
+     * Check date if cache exist, if not create and send back AvailableTimeSlot.
+     * @param date
+     * @param timeSlot
+     * @return
+     */
+    private AvailableTimeSlot getAvailableTimeSlot(LocalDate date, TimeSlot timeSlot) {
+        Optional<AvailableTimeSlot> optional = availableTimeSlotsRepo.findByDateAndTimeSlot(date, timeSlot);
+
+        if(!optional.isPresent()){
+            createCacheForDate(date);
+            optional = availableTimeSlotsRepo.findByDateAndTimeSlot(date, timeSlot);
+        }
+        AvailableTimeSlot availableTimeSlot = optional.orElseThrow(() -> new GenericException("Something went wrong!!!"));
+        if (availableTimeSlot.getAvailableStylists().size() == 0) {
+            throw new BadRequestException("Time slot not available.", date + "-" + timeSlot);
+        }
+
+        return availableTimeSlot;
+    }
 }

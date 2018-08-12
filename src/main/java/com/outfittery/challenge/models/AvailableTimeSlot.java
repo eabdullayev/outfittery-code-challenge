@@ -11,8 +11,7 @@ import java.util.List;
         @NamedQuery(name = "AvailableTimeSlot.findByDateAndTimeSlot",
         query = "SELECT a " +
                 "FROM AvailableTimeSlot a " +
-                "WHERE SIZE(a.availableStylists)>0 " +
-                "AND a.date=?1 " +
+                "WHERE a.date=?1 " +
                 "AND a.timeSlot = ?2")
 })
 public class AvailableTimeSlot {
@@ -28,6 +27,9 @@ public class AvailableTimeSlot {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "AVAILABLE_STYLISTS")
     private List<Long> availableStylists = new ArrayList<>();
+
+    @Version
+    private int version;
 
     public Long getId() {
         return id;
@@ -59,5 +61,13 @@ public class AvailableTimeSlot {
 
     public void setAvailableStylists(List<Long> availableStylists) {
         this.availableStylists = availableStylists;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

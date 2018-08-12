@@ -1,5 +1,8 @@
 package com.outfittery.challenge.exceptions;
 
+/**
+ * Used for data not found in DB
+ */
 public class ResourceNotFoundException extends RuntimeException {
 
     private Object rejectedValue;

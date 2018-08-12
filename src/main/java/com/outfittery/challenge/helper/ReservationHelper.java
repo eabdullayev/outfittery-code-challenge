@@ -6,7 +6,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Helper class to operate over Reservation
+ */
 public class ReservationHelper {
+    /**
+     * check if customer has reservation from now
+     * @param customerReservations
+     * @return future reservation
+     */
     public static Reservation hasBooking(List<Reservation> customerReservations) {
         for (Reservation r : customerReservations) {
             if (r.getDate().isAfter(LocalDate.now()) ||

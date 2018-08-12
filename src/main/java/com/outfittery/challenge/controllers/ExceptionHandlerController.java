@@ -2,6 +2,7 @@ package com.outfittery.challenge.controllers;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.outfittery.challenge.exceptions.BadRequestException;
+import com.outfittery.challenge.exceptions.GenericException;
 import com.outfittery.challenge.exceptions.ResourceNotFoundException;
 import com.outfittery.challenge.rest.dto.ExceptionResponse;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,19 @@ import org.springframework.web.context.request.WebRequest;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 
+/**
+ * handles all exception and convert it read friendly format
+ */
 @RestControllerAdvice
 @RestController
 public class ExceptionHandlerController {
 
+    /**
+     * handles all validation problem in primitive and list type arguments
+     * @param ex - exception class
+     * @param request - used for retrieve rest path
+     * @return
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse constraintViolationHandler(ConstraintViolationException ex, WebRequest request) {
@@ -27,6 +37,12 @@ public class ExceptionHandlerController {
                 request.getDescription(false));
     }
 
+    /**
+     * handles all validation problem for object type arguments
+     * @param ex - exception class
+     * @param request - used for retrieve rest path
+     * @return
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse methodArgsNotValidHandler(MethodArgumentNotValidException ex, WebRequest request) {
@@ -54,6 +70,20 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse badRequesthandler(BadRequestException ex, WebRequest request) {
         return new ExceptionResponse(ex.getMessage(), ex.getRejectedValue(),
+                request.getDescription(false));
+    }
+
+    @ExceptionHandler(GenericException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionResponse genericExceptinHandler(GenericException ex, WebRequest request) {
+        return new ExceptionResponse(ex.getMessage(),
+                request.getDescription(false));
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionResponse unhandledExceptions(Exception ex, WebRequest request) {
+        return new ExceptionResponse(ex.getMessage(),
                 request.getDescription(false));
     }
 }

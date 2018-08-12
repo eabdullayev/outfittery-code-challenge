@@ -54,4 +54,15 @@ public class LeaveRequest {
     public void setLeaveType(LeaveType leaveType) {
         this.leaveType = leaveType;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LeaveRequest{");
+        sb.append("stylistId=").append(stylistId);
+        sb.append(", begin=").append(begin);
+        sb.append(", end=").append(end);
+        sb.append(", leaveType=").append(leaveType);
+        sb.append('}');
+        return sb.toString();
+    }
 }

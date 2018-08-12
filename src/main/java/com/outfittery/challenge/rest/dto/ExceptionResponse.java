@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * used for boxing exception data
+ */
 public class ExceptionResponse {
     private LocalDate date;
     List<FieldError> errors = new ArrayList<>();

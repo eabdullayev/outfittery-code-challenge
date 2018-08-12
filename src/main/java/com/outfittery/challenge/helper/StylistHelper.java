@@ -6,10 +6,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Helper class to operate over stylist.
+ */
 public class StylistHelper {
-    public static Long getFreeStylist(String busyStylists, String freeStylists){
-        List<String> freeStylistList = Arrays.asList(freeStylists.split(","));
-        Set<Long> freeStylistSet = freeStylistList.stream()
+
+    /**
+     * subtract from allStylist list busy stylist list and return back free stylist list
+     * @param busyStylists
+     * @param allStylist
+     * @return
+     */
+    public static List<Long> getAvailableStylists(String busyStylists, String allStylist){
+        List<String> allStylistList = Arrays.asList(allStylist.split(","));
+        Set<Long> allStylistSet = allStylistList.stream()
                 .mapToLong(Long::parseLong).boxed().collect(Collectors.toSet());
 
         if(busyStylists != null) {
@@ -17,25 +27,9 @@ public class StylistHelper {
             Set<Long> busyStylistSet = busyStylistList.stream()
                     .mapToLong(Long::parseLong).boxed().collect(Collectors.toSet());
 
-            freeStylistSet.removeAll(busyStylistSet);
+            allStylistSet.removeAll(busyStylistSet);
         }
 
-        return freeStylistSet.iterator().next();
-    }
-
-    public static List<Long> getAvailableStylists(String busyStylists, String freeStylists){
-        List<String> freeStylistList = Arrays.asList(freeStylists.split(","));
-        Set<Long> freeStylistSet = freeStylistList.stream()
-                .mapToLong(Long::parseLong).boxed().collect(Collectors.toSet());
-
-        if(busyStylists != null) {
-            List<String> busyStylistList = Arrays.asList(busyStylists.split(","));
-            Set<Long> busyStylistSet = busyStylistList.stream()
-                    .mapToLong(Long::parseLong).boxed().collect(Collectors.toSet());
-
-            freeStylistSet.removeAll(busyStylistSet);
-        }
-
-        return new ArrayList<>(freeStylistSet);
+        return new ArrayList<>(allStylistSet);
     }
 }

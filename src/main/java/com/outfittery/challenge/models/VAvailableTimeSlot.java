@@ -5,6 +5,9 @@ import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 
+/**
+ * Temp entity for generating cache data
+ */
 @Entity
 @Immutable
 @NamedNativeQueries(
