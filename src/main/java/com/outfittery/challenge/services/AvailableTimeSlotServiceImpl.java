@@ -76,4 +76,12 @@ public class AvailableTimeSlotServiceImpl implements AvailableTimeSlotService {
             }
         }
     }
+
+    public Integer getDaysToCache() {
+        return daysToCache;
+    }
+
+    public void setDaysToCache(Integer daysToCache) {
+        this.daysToCache = daysToCache;
+    }
 }
