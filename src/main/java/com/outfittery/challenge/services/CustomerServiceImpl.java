@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * used for performing CRUD operation on customer object
+ */
 @Service
 public class CustomerServiceImpl implements CustomerService{
     @Autowired

@@ -5,6 +5,10 @@ public class BadRequestException extends RuntimeException {
     public BadRequestException() {
     }
 
+    public BadRequestException(String message) {
+        super(message);
+    }
+
     public BadRequestException(String message, Object rejectedValue) {
         super(message);
         this.rejectedValue = rejectedValue;

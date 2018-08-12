@@ -41,7 +41,7 @@ public class AvailableTimeSlotServiceImpl implements AvailableTimeSlotService {
      * will be used by scheduler for caching time slots for number of days from now.
      */
     @Override @Transactional
-    @Scheduled(fixedRate = 300000, initialDelay = 300000)
+    @Scheduled(cron = "${schedule.fire.time}")
     public void cacheTimeSlots() {
         logger.info("starting caching of time slots for days: " + daysToCache);
         //first delete all data from available_time_slots table

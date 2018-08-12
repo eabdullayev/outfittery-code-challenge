@@ -7,6 +7,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "AVAILABLE_TIME_SLOTS")
+@NamedQueries({
+        @NamedQuery(name = "AvailableTimeSlot.findByDateAndTimeSlot",
+        query = "SELECT a " +
+                "FROM AvailableTimeSlot a " +
+                "WHERE SIZE(a.availableStylists)>0 " +
+                "AND a.date=?1 " +
+                "AND a.timeSlot = ?2")
+})
 public class AvailableTimeSlot {
 
     @Id

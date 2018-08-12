@@ -47,4 +47,15 @@ public class ReservationRequest {
     public void setDate(LocalDate date) {
         this.date = date;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ReservationRequest{");
+        sb.append("reservationId=").append(reservationId);
+        sb.append(", customerId=").append(customerId);
+        sb.append(", timeSlot='").append(timeSlot).append('\'');
+        sb.append(", date=").append(date);
+        sb.append('}');
+        return sb.toString();
+    }
 }
