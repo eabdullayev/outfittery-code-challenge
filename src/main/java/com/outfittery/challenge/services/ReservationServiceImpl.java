@@ -189,9 +189,10 @@ public class ReservationServiceImpl implements ReservationService {
         logger.info("getting time slots for date: " + date);
 
         List<AvailableTimeSlot> availableTimeSlots = availableTimeSlotsRepo.findAllTimeSlotsByDate(date);
-        //if not cached jet,then do manual caching for that date
+        //if not cached yet, do manual caching for that date
         if (availableTimeSlots == null || availableTimeSlots.size()==0) {
             createCacheForDate(date);
+            availableTimeSlots = availableTimeSlotsRepo.findAllTimeSlotsByDate(date);
         }
 
         return availableTimeSlots.stream()
