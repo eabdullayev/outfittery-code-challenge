@@ -11,14 +11,15 @@ import java.util.List;
  */
 public class ReservationHelper {
     /**
-     * check if customer has reservation from now
+     * check if customer has reservation after now
      * @param customerReservations
      * @return future reservation
      */
     public static Reservation hasBooking(List<Reservation> customerReservations) {
+        LocalDate now = LocalDate.now();
         for (Reservation r : customerReservations) {
-            if (r.getDate().isAfter(LocalDate.now()) ||
-                    (LocalDate.now().isEqual(r.getDate()) && LocalTime.now().isBefore(LocalTime.parse(r.getTimeSlot().getTime())))) {
+            if (r.getDate().isAfter(now) ||
+                    (now.isEqual(r.getDate()) && LocalTime.now().isBefore(LocalTime.parse(r.getTimeSlot().getTime())))) {
 
                 return r;
             }

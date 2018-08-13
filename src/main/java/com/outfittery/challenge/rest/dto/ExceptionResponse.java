@@ -13,6 +13,9 @@ public class ExceptionResponse {
     List<FieldError> errors = new ArrayList<>();
     private String details;
 
+    public ExceptionResponse() {
+    }
+
     public ExceptionResponse(String messate, String details) {
         this(messate, null, details);
     }
@@ -63,10 +66,13 @@ public class ExceptionResponse {
         this.errors = errors;
     }
 
-    static class FieldError{
+    public static class FieldError{
         private String field;
         private Object rejectedValue;
         private String message;
+
+        public FieldError() {
+        }
 
         public FieldError(org.springframework.validation.FieldError fieldError) {
             this.field = fieldError.getField();

@@ -19,6 +19,13 @@ public class Customer {
     @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
 
+    public Customer() {
+    }
+
+    public Customer(@NotBlank(message = "Name can not be blank") @Size(message = "name length should be min 2 and max 50", min = 2, max = 50) String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
