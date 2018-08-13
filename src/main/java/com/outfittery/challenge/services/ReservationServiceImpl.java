@@ -74,6 +74,7 @@ public class ReservationServiceImpl implements ReservationService {
                     reservationRequest.getDate() + "-" + reservationRequest.getTimeSlot());
         }
 
+
         TimeSlot timeSlot = timeSlotRepo.findByTime(reservationRequest.getTimeSlot())
                 .orElseThrow(() -> new BadRequestException("Invalid time entered", reservationRequest.getTimeSlot()));
 
