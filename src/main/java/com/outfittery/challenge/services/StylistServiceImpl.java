@@ -2,6 +2,7 @@ package com.outfittery.challenge.services;
 
 import com.outfittery.challenge.exceptions.ResourceNotFoundException;
 import com.outfittery.challenge.models.*;
+import com.outfittery.challenge.repositories.AvailableTimeSlotsRepo;
 import com.outfittery.challenge.repositories.LeaveRepo;
 import com.outfittery.challenge.repositories.ReservationRepo;
 import com.outfittery.challenge.repositories.StylistRepo;
@@ -33,6 +34,9 @@ public class StylistServiceImpl implements StylistService {
     @Autowired
     private ReservationService reservationService;
 
+    @Autowired
+    private AvailableTimeSlotsRepo availableTimeSlotsRepo;
+
     @Override
     public Stylist getById(Long id) {
         logger.info("stylist id: " + id);
@@ -52,6 +56,14 @@ public class StylistServiceImpl implements StylistService {
         Stylist fromDB = stylistRepo.findById(stylistId)
                 .orElseThrow(() -> new ResourceNotFoundException("Stylist not found in db", stylistId));
         fromDB.setStylistState(StylistState.READY_TO_STYLE);
+
+        //this is quick work around to add new stylist to availableStylist set.
+        // But normally I prefer messaging or state machine here.
+        List<AvailableTimeSlot> availableTimeSlots = availableTimeSlotsRepo.findAll();
+        availableTimeSlots.stream()
+                .forEach(availableTimeSlot -> availableTimeSlot.getAvailableStylists().add(fromDB.getId()));
+        availableTimeSlotsRepo.saveAll(availableTimeSlots);
+
         return stylistRepo.save(fromDB).getId();
     }
 

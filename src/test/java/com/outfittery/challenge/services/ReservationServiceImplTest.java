@@ -18,9 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -79,9 +77,11 @@ public class ReservationServiceImplTest {
 
         //init availableTimeSlot
         AvailableTimeSlot availableTimeSlot = mock(AvailableTimeSlot.class);
-        List<Long> availableStylist = mock(List.class);
+        Set<Long> availableStylist = mock(Set.class);
+        Iterator<Long> iterator = mock(Iterator.class);
+        when(iterator.next()).thenReturn(1L);
         when(availableStylist.size()).thenReturn(1);
-        when(availableStylist.remove(anyInt())).thenReturn(1L);
+        when(availableStylist.iterator()).thenReturn(iterator);
         when(availableTimeSlot.getAvailableStylists()).thenReturn(availableStylist);
 
         //init availableTimeSlotsRepo.findByDateAndTimeSlot
@@ -192,7 +192,7 @@ public class ReservationServiceImplTest {
         expectedException.expectMessage("Time slot not available.");
 
         AvailableTimeSlot availableTimeSlot = mock(AvailableTimeSlot.class);
-        List<Long> availableStylist = mock(List.class);
+        Set<Long> availableStylist = mock(Set.class);
         when(availableStylist.size()).thenReturn(0);
         when(availableTimeSlot.getAvailableStylists()).thenReturn(availableStylist);
 

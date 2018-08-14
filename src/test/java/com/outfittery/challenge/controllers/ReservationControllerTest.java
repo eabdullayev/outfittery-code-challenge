@@ -54,7 +54,7 @@ public class ReservationControllerTest {
                 .get("/api/v1.0/reservation/time-slots/available?date="+ LocalDate.now().minusDays(3).toString());
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json("{\"errors\":[{\"field\":\"getAvailableTimeSlot.date\",\"rejectedValue\":\"2018-08-10\"," +
+                .andExpect(content().json("{\"errors\":[{\"field\":\"getAvailableTimeSlot.date\"," +
                         "\"message\":\"Date should be present or future\"}]," +
                         "\"details\":\"uri=/api/v1.0/reservation/time-slots/available\"}"))
                 .andReturn();

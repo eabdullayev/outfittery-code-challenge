@@ -17,7 +17,7 @@ public class StylistHelper {
      * @param allStylist
      * @return
      */
-    public static List<Long> getAvailableStylists(String busyStylists, String allStylist){
+    public static Set<Long> getAvailableStylists(String busyStylists, String allStylist){
         List<String> allStylistList = Arrays.asList(allStylist.split(","));
         Set<Long> allStylistSet = allStylistList.stream()
                 .mapToLong(Long::parseLong).boxed().collect(Collectors.toSet());
@@ -30,6 +30,6 @@ public class StylistHelper {
             allStylistSet.removeAll(busyStylistSet);
         }
 
-        return new ArrayList<>(allStylistSet);
+        return allStylistSet;
     }
 }

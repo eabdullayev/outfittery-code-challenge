@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * This class is used to cache time slots per stylist to avoid every time calling joined queries to database.
@@ -64,7 +65,7 @@ public class AvailableTimeSlotServiceImpl implements AvailableTimeSlotService {
             Optional<TimeSlot> optionalTimeSlot = timeSlotRepo.findByTime(availableTimeSlot.getTime());
             if (optionalTimeSlot.isPresent()) {
                 TimeSlot timeSlot = optionalTimeSlot.get();
-                List<Long> availableStylists = StylistHelper.getAvailableStylists(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds());
+                Set<Long> availableStylists = StylistHelper.getAvailableStylists(availableTimeSlot.getBusyStylistIds(), availableTimeSlot.getAllStylistIds());
                 AvailableTimeSlot ats = new AvailableTimeSlot();
                 ats.setDate(date);
                 ats.setTimeSlot(timeSlot);

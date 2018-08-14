@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class AvailableTimeSlotsRepoTest {
         AvailableTimeSlot availableTimeSlot = new AvailableTimeSlot();
         availableTimeSlot.setDate(LocalDate.now());
         availableTimeSlot.setTimeSlot(timeSlot);
-        availableTimeSlot.setAvailableStylists(Arrays.asList(1L, 2L));
+        availableTimeSlot.setAvailableStylists(new HashSet<>(Arrays.asList(1L, 2L)));
         availableTimeSlotsRepo.save(availableTimeSlot);
     }
 

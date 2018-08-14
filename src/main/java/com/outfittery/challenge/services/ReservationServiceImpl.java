@@ -81,8 +81,10 @@ public class ReservationServiceImpl implements ReservationService {
         AvailableTimeSlot availableTimeSlot = getAvailableTimeSlot(reservationRequest.getDate(), timeSlot);
 
         //db validation end, preparing required data.
-        //removing one available stylist from list
-        Stylist stylist = stylistRepo.getOne(availableTimeSlot.getAvailableStylists().remove(0));
+        //removing one available stylist from Set
+        Long stylistId = availableTimeSlot.getAvailableStylists().iterator().next();
+        Stylist stylist = stylistRepo.getOne(stylistId);
+        availableTimeSlot.getAvailableStylists().remove(stylistId);
 
         Reservation reservation = new Reservation();
         reservation.setCustomer(customer);
@@ -139,7 +141,9 @@ public class ReservationServiceImpl implements ReservationService {
         availableTimeSlotsRepo.save(oldAvailableTimeSlot);
 
         //get new stylist for new date and time.
-        Stylist stylist = stylistRepo.getOne(availableTimeSlot.getAvailableStylists().remove(0));
+        Long stylistId = availableTimeSlot.getAvailableStylists().iterator().next();
+        Stylist stylist = stylistRepo.getOne(stylistId);
+        availableTimeSlot.getAvailableStylists().remove(stylistId);
 
         r.setStylist(stylist);
         r.setDate(reservationRequest.getDate());

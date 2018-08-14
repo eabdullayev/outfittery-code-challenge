@@ -2,8 +2,7 @@ package com.outfittery.challenge.models;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "AVAILABLE_TIME_SLOTS")
@@ -26,7 +25,7 @@ public class AvailableTimeSlot {
     private TimeSlot timeSlot;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "AVAILABLE_STYLISTS")
-    private List<Long> availableStylists = new ArrayList<>();
+    private Set<Long> availableStylists = new LinkedHashSet<>();
 
     @Version
     private int version;
@@ -55,11 +54,11 @@ public class AvailableTimeSlot {
         this.timeSlot = timeSlot;
     }
 
-    public List<Long> getAvailableStylists() {
+    public Set<Long> getAvailableStylists() {
         return availableStylists;
     }
 
-    public void setAvailableStylists(List<Long> availableStylists) {
+    public void setAvailableStylists(Set<Long> availableStylists) {
         this.availableStylists = availableStylists;
     }
 
