@@ -18,6 +18,9 @@ public class TimeSlot implements Serializable {
     @OneToMany(mappedBy = "timeSlot")
     List<Reservation> reservations;
 
+    @OneToMany(mappedBy = "timeSlot")
+    List<AvailableTimeSlot> availableTimeSlots;
+
     public Long getId() {
         return id;
     }
@@ -48,5 +51,13 @@ public class TimeSlot implements Serializable {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public List<AvailableTimeSlot> getAvailableTimeSlots() {
+        return availableTimeSlots;
+    }
+
+    public void setAvailableTimeSlots(List<AvailableTimeSlot> availableTimeSlots) {
+        this.availableTimeSlots = availableTimeSlots;
     }
 }

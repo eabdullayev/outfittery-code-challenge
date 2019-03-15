@@ -4,6 +4,9 @@ import com.outfittery.challenge.models.Reservation;
 import com.outfittery.challenge.rest.dto.ReservationRequest;
 import com.outfittery.challenge.rest.dto.ReservationResponse;
 
+/**
+ * used for creating ReservationResponse,ReservationRequest from Reservation or vice versa
+ */
 public class ReservationBuilder {
     public static ReservationResponse buildReservationResponse(Reservation reservation) {
         ReservationResponse reservationResponse = new ReservationResponse();

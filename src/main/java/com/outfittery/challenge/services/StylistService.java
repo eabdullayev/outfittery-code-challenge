@@ -3,6 +3,7 @@ package com.outfittery.challenge.services;
 import com.outfittery.challenge.models.Leave;
 import com.outfittery.challenge.models.Stylist;
 import com.outfittery.challenge.models.StylistState;
+import com.outfittery.challenge.rest.dto.LeaveRequest;
 
 public interface StylistService {
     Stylist getById(Long id);
@@ -11,7 +12,7 @@ public interface StylistService {
 
     boolean delete(Long id);
 
-    boolean requestForLeave(Leave leave);
+    boolean requestForLeave(LeaveRequest leave);
 
     Long updateState(Long stylistId);
 }

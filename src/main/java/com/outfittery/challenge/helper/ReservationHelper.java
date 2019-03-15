@@ -4,33 +4,22 @@ import com.outfittery.challenge.models.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
+/**
+ * Helper class to operate over Reservation
+ */
 public class ReservationHelper {
-    public static Long getFreeStylist(String busyStylists, String freeStylists){
-
-        List<String> freeStylistList = Arrays.asList(freeStylists.split(","));
-        Set<Long> freeStylistSet = freeStylistList.stream()
-                .mapToLong(Long::parseLong).boxed().collect(Collectors.toSet());
-
-        if(busyStylists != null) {
-            List<String> busyStylistList = Arrays.asList(busyStylists.split(","));
-            Set<Long> busyStylistSet = busyStylistList.stream()
-                    .mapToLong(Long::parseLong).boxed().collect(Collectors.toSet());
-
-            freeStylistSet.removeAll(busyStylistSet);
-        }
-
-        return freeStylistSet.iterator().next();
-    }
-
+    /**
+     * check if customer has reservation after now
+     * @param customerReservations
+     * @return future reservation
+     */
     public static Reservation hasBooking(List<Reservation> customerReservations) {
+        LocalDate now = LocalDate.now();
         for (Reservation r : customerReservations) {
-            if (r.getDate().isAfter(LocalDate.now()) ||
-                    (LocalDate.now().isEqual(r.getDate()) && LocalTime.now().isBefore(LocalTime.parse(r.getTimeSlot().getTime())))) {
+            if (r.getDate().isAfter(now) ||
+                    (now.isEqual(r.getDate()) && LocalTime.now().isBefore(LocalTime.parse(r.getTimeSlot().getTime())))) {
 
                 return r;
             }

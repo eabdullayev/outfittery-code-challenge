@@ -9,6 +9,17 @@ public class ReservationResponse {
     private LocalDate date;
     private String stylist;
 
+    public ReservationResponse() {
+    }
+
+    public ReservationResponse(Long customerId, String customerName, String timeSlot, LocalDate date, String stylist) {
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.timeSlot = timeSlot;
+        this.date = date;
+        this.stylist = stylist;
+    }
+
     public Long getCustomerId() {
         return customerId;
     }

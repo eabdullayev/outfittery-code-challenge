@@ -1,6 +1,9 @@
 package com.outfittery.challenge.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
@@ -10,6 +13,8 @@ public class Stylist {
     @SequenceGenerator(name = "SEQ_STYLIST_ID", sequenceName = "SEQ_STYLIST_ID", initialValue = 1, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_STYLIST_ID")
     private Long id;
+    @NotBlank(message = "name can not be blank")
+    @Size(message = "name length should be min 2 and max 50", min = 2, max = 50)
     private String name;
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
@@ -20,6 +25,13 @@ public class Stylist {
 
     @OneToMany(mappedBy = "stylist")
     private List<Reservation> reservations;
+
+    public Stylist() {
+    }
+
+    public Stylist(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -59,5 +71,15 @@ public class Stylist {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Stylist{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", stylistState=").append(stylistState);
+        sb.append('}');
+        return sb.toString();
     }
 }

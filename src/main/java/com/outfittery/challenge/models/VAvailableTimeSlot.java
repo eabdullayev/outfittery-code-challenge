@@ -5,6 +5,9 @@ import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 
+/**
+ * Temp entity for generating cache data
+ */
 @Entity
 @Immutable
 @NamedNativeQueries(
@@ -65,6 +68,15 @@ public class VAvailableTimeSlot {
 
     @Column(name = "all_stylist_ids")
     private String allStylistIds;
+
+    public VAvailableTimeSlot() {
+    }
+
+    public VAvailableTimeSlot(String time, String busyStylistIds, String allStylistIds) {
+        this.time = time;
+        this.busyStylistIds = busyStylistIds;
+        this.allStylistIds = allStylistIds;
+    }
 
     public String getTime() {
         return time;

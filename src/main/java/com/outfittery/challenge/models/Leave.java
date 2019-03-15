@@ -1,6 +1,8 @@
 package com.outfittery.challenge.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDate;
 
 @Entity
@@ -21,6 +23,16 @@ public class Leave {
 
     @Enumerated(EnumType.STRING)
     private LeaveType leaveType;
+
+    public Leave() {
+    }
+
+    public Leave(LocalDate begin, LocalDate end, Stylist stylist, LeaveType leaveType) {
+        this.begin = begin;
+        this.end = end;
+        this.stylist = stylist;
+        this.leaveType = leaveType;
+    }
 
     public Long getId() {
         return id;
